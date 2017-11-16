@@ -49,6 +49,8 @@ public class GameFragment extends Fragment {
         mImgBtnScissors.setOnClickListener(imgBtnScissorsOnClick);
         mImgBtnStone.setOnClickListener(imgBtnStoneOnClick);
         mImgBtnPaper.setOnClickListener(imgBtnPaperOnClick);
+
+        ((MainActivity) getActivity()).sendToResult(miCountSet, miCountPlayerWin, miCountComWin, miCountDraw);
     }
 
     private View.OnClickListener imgBtnScissorsOnClick = new View.OnClickListener() {

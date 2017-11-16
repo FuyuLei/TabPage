@@ -3,7 +3,9 @@ package com.tabpageapp;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +13,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
 
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(final int position) {
 
             }
 
@@ -84,12 +89,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeTextColor() {
-        ValueAnimator colorAnim = ObjectAnimator.ofInt(tabLayout, "textColor", Color.RED, Color.BLUE);
+        int colorVal, colorEnd, colorBack;
+        colorBack = ((ColorDrawable) (tabLayout.getBackground())).getColor();
+        colorVal = (colorBack & 0x00FF0000) >> 16;
+        if (colorVal > 127) {
+            colorEnd = 0;
+        } else {
+            colorEnd = 255;
+        }
+        ValueAnimator colorAnim = ObjectAnimator.ofInt(colorVal, colorEnd);
         colorAnim.setDuration(1000);
-        colorAnim.setEvaluator(new ArgbEvaluator());
+        colorAnim.setInterpolator(new LinearInterpolator());
         colorAnim.setRepeatCount(ValueAnimator.INFINITE);
-        colorAnim.setRepeatMode(ValueAnimator.REVERSE);
         colorAnim.start();
+        colorAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                int val = (Integer) animator.getAnimatedValue();
+                tabLayout.setTabTextColors(ColorStateList.valueOf(0xFF808080 | val << 16));
+            }
+        });
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -115,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return fragment;
         }
+
 
         @Override
         public int getCount() {
