@@ -1,11 +1,10 @@
 package com.tabpageapp;
 
-import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Path;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -25,10 +23,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mViewPager;
     TabLayout tabLayout;
     ArrayList<Fragment> list;
-//    public int miCountSet = 0,
-//            miCountPlayerWin = 0,
-//            miCountComWin = 0,
-//            miCountDraw = 0;
+    private int rgbNum = 1, rgbChange = 1, num;
+    private TextView game, result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +33,25 @@ public class MainActivity extends AppCompatActivity {
 
         // 設定 ViewPager 和 Pager Adapter。
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        game = (TextView) findViewById(R.id.tv_title_game);
+        result = (TextView) findViewById(R.id.tv_title_result);
 
         list = new ArrayList<>();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), list);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(0);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                if (position == 0) {
+                    clearColor();
+                    num = mViewPager.getCurrentItem();
+                    changeCurrent(num);
+                }else {
+                    clearColor();
+                    num = mViewPager.getCurrentItem();
+                    changeCurrent(num);
+                }
             }
 
             @Override
@@ -57,12 +64,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-//        mViewPager.getCurrentItem()
         initFragment();
 
         // 設定 ViewPager 給 TabLayout，就會顯示 tab pages。
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.getTabAt(0).setCustomView(game);
+        tabLayout.getTabAt(1).setCustomView(result);
         tabLayout.getTabAt(0).setIcon(R.drawable.smile);
         tabLayout.getTabAt(1).setIcon(R.drawable.safe);
 
@@ -89,26 +97,90 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void changeTextColor() {
-        int colorVal, colorEnd, colorBack;
-        colorBack = ((ColorDrawable) (tabLayout.getBackground())).getColor();
-        colorVal = (colorBack & 0x00FF0000) >> 16;
-        if (colorVal > 127) {
-            colorEnd = 0;
-        } else {
-            colorEnd = 255;
-        }
-        ValueAnimator colorAnim = ObjectAnimator.ofInt(colorVal, colorEnd);
-        colorAnim.setDuration(1000);
-        colorAnim.setInterpolator(new LinearInterpolator());
-        colorAnim.setRepeatCount(ValueAnimator.INFINITE);
-        colorAnim.start();
+        ValueAnimator colorAnim = ObjectAnimator.ofInt(0, 255);
+        colorAnim.setDuration(Integer.MAX_VALUE);
         colorAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                int val = (Integer) animator.getAnimatedValue();
-                tabLayout.setTabTextColors(ColorStateList.valueOf(0xFF808080 | val << 16));
+                switch (num) {
+                    case 0:
+                        switch (rgbChange) {
+                            case 1:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 2;
+                                    rgbNum = 0;
+                                }
+                                game.setTextColor(Color.rgb(rgbNum, 0, 0));
+                                rgbNum += 15;
+                                break;
+                            case 2:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 3;
+                                    rgbNum = 0;
+                                }
+                                game.setTextColor(Color.rgb(0, rgbNum, 0));
+                                rgbNum += 15;
+                                break;
+                            case 3:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 1;
+                                    rgbNum = 0;
+                                }
+                                game.setTextColor(Color.rgb(0, 0, rgbNum));
+                                rgbNum += 15;
+                                break;
+                        }
+                        break;
+                    case 1:
+                        switch (rgbChange) {
+                            case 1:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 2;
+                                    rgbNum = 1;
+                                }
+                                result.setTextColor(Color.rgb(rgbNum, 0, 0));
+                                rgbNum += 15;
+                                break;
+                            case 2:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 3;
+                                    rgbNum = 1;
+                                }
+                                result.setTextColor(Color.rgb(0, rgbNum, 0));
+                                rgbNum += 15;
+                                break;
+                            case 3:
+                                if (rgbNum >= 255) {
+                                    rgbChange = 1;
+                                    rgbNum = 1;
+                                }
+                                result.setTextColor(Color.rgb(0, 0, rgbNum));
+                                rgbNum += 15;
+                                break;
+                        }
+                        break;
+                }
             }
         });
+        colorAnim.start();
+    }
+
+    private void clearColor(){
+        game.setTextColor(Color.BLACK);
+        result.setTextColor(Color.BLACK);
+    }
+
+    private void changeCurrent(int position){
+        switch (position){
+            case 0:
+                game.setTextColor(Color.BLACK);
+                mViewPager.setCurrentItem(0);
+                break;
+            case 1:
+                result.setTextColor(Color.BLACK);
+                mViewPager.setCurrentItem(1);
+                break;
+        }
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -135,22 +207,21 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
-
         @Override
         public int getCount() {
             return 2;
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "電腦猜拳遊戲";
-                case 1:
-                    return "全部局數";
-                default:
-                    return null;
-            }
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return "電腦猜拳遊戲";
+//                case 1:
+//                    return "全部局數";
+//                default:
+//                    return null;
+//            }
+//        }
     }
 }
