@@ -13,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ArrayList<Fragment> list;
     private int rgbNum = 1, rgbChange = 1, num;
-    private TextView game, result;
+    private LinearLayout game, result;
+    private ImageView iv_game;
+    private TextView tv_game, tv_result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
         // 設定 ViewPager 和 Pager Adapter。
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        game = (TextView) findViewById(R.id.tv_title_game);
-        result = (TextView) findViewById(R.id.tv_title_result);
+        game = (LinearLayout) findViewById(R.id.ll_main_game);
+        result = (LinearLayout) findViewById(R.id.ll_main_result);
+        iv_game = (ImageView) findViewById(R.id.iv_main_game);
+        tv_game = (TextView) findViewById(R.id.tv_main_game);
+        tv_result = (TextView) findViewById(R.id.tv_main_result);
 
         list = new ArrayList<>();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), list);
@@ -71,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.getTabAt(0).setCustomView(game);
         tabLayout.getTabAt(1).setCustomView(result);
-        tabLayout.getTabAt(0).setIcon(R.drawable.smile);
-        tabLayout.getTabAt(1).setIcon(R.drawable.safe);
 
         changeTextColor();
     }
@@ -84,11 +89,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeIcon(boolean win, boolean lose, boolean draw) {
         if (win) {
-            tabLayout.getTabAt(0).setIcon(R.drawable.smile);
+            iv_game.setImageResource(R.drawable.smile);
         } else if (lose) {
-            tabLayout.getTabAt(0).setIcon(R.drawable.qq);
+            iv_game.setImageResource(R.drawable.qq);
         } else if (draw) {
-            tabLayout.getTabAt(0).setIcon(R.drawable.safe);
+            iv_game.setImageResource(R.drawable.safe);
         }
     }
 
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 2;
                                     rgbNum = 0;
                                 }
-                                game.setTextColor(Color.rgb(rgbNum, 0, 0));
+                                tv_game.setTextColor(Color.rgb(rgbNum, 0, 0));
                                 rgbNum += 15;
                                 break;
                             case 2:
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 3;
                                     rgbNum = 0;
                                 }
-                                game.setTextColor(Color.rgb(0, rgbNum, 0));
+                                tv_game.setTextColor(Color.rgb(0, rgbNum, 0));
                                 rgbNum += 15;
                                 break;
                             case 3:
@@ -126,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 1;
                                     rgbNum = 0;
                                 }
-                                game.setTextColor(Color.rgb(0, 0, rgbNum));
+                                tv_game.setTextColor(Color.rgb(0, 0, rgbNum));
                                 rgbNum += 15;
                                 break;
                         }
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 2;
                                     rgbNum = 1;
                                 }
-                                result.setTextColor(Color.rgb(rgbNum, 0, 0));
+                                tv_result.setTextColor(Color.rgb(rgbNum, 0, 0));
                                 rgbNum += 15;
                                 break;
                             case 2:
@@ -146,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 3;
                                     rgbNum = 1;
                                 }
-                                result.setTextColor(Color.rgb(0, rgbNum, 0));
+                                tv_result.setTextColor(Color.rgb(0, rgbNum, 0));
                                 rgbNum += 15;
                                 break;
                             case 3:
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                                     rgbChange = 1;
                                     rgbNum = 1;
                                 }
-                                result.setTextColor(Color.rgb(0, 0, rgbNum));
+                                tv_result.setTextColor(Color.rgb(0, 0, rgbNum));
                                 rgbNum += 15;
                                 break;
                         }
@@ -166,18 +171,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearColor(){
-        game.setTextColor(Color.BLACK);
-        result.setTextColor(Color.BLACK);
+        tv_game.setTextColor(Color.BLACK);
+        tv_result.setTextColor(Color.BLACK);
     }
 
     private void changeCurrent(int position){
         switch (position){
             case 0:
-                game.setTextColor(Color.BLACK);
+                tv_game.setTextColor(Color.BLACK);
                 mViewPager.setCurrentItem(0);
                 break;
             case 1:
-                result.setTextColor(Color.BLACK);
+                tv_result.setTextColor(Color.BLACK);
                 mViewPager.setCurrentItem(1);
                 break;
         }
