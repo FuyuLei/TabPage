@@ -1,4 +1,4 @@
-package com.tabpageapp;
+﻿package com.tabpageapp;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void changeTextColor() {
         ValueAnimator colorAnim = ObjectAnimator.ofInt(0, 255);
-        colorAnim.setDuration(Integer.MAX_VALUE);
+        colorAnim.setDuration(1000);
+        colorAnim.setRepeatCount(ValueAnimator.INFINITE);
         colorAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
